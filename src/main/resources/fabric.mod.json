@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "id": "notenoughupdates",
+  "version": "${version}",
+  "name": "NotEnoughUpdates",
+  "description": "A feature rich Minecraft Fabric mod for Hypixel Skyblock.",
+  "authors": [
+    "Moulberry",
+    "NEU Contributors"
+  ],
+  "contact": {
+    "homepage": "https://github.com/NotEnoughUpdates/NotEnoughUpdates",
+    "sources": "https://github.com/NotEnoughUpdates/NotEnoughUpdates",
+    "issues": "https://github.com/NotEnoughUpdates/NotEnoughUpdates/issues"
+  },
+  "license": "LGPL-3.0-or-later",
+  "icon": "assets/notenoughupdates/icon.png",
+
+  "environment": "client",
+
+  "entrypoints": {
+    "client": [
+      "io.github.moulberry.notenoughupdates.NotEnoughUpdates"
+    ],
+    "fabric-datagen": []
+  },
+
+  "mixins": [
+    "mixins.notenoughupdates.json"
+  ],
+
+  "dependencies": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": "*",
+    "fabric-language-kotlin": ">=${fabric_kotlin_version}",
+    "minecraft": "~${minecraft_version}",
+    "java": ">=21"
+  },
+
+  "suggests": {
+    "modmenu": "*"
+  },
+
+  "custom": {
+    "modmenu": {
+      "badges": [ "library" ],
+      "links": {
+        "modmenu.discord": "https://discord.gg/moulberry",
+        "modmenu.github": "https://github.com/NotEnoughUpdates/NotEnoughUpdates"
+      }
+    }
+  }
+}
