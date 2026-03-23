@@ -3,32 +3,32 @@
 
 <div align="center">
     <!-- release -->
-    <a href="https://github.com/NotEnoughUpdates/NotEnoughUpdates/releases/latest" target="_blank">
-        <img src="https://img.shields.io/github/v/release/NotEnoughUpdates/NotEnoughUpdates?color=informational&include_prereleases&label=release&logo=github&logoColor=white" alt="release">
+    <a href="https://github.com/VonThaler/NotEnoughUpdates-1.21.11/releases/latest" target="_blank">
+        <img src="https://img.shields.io/github/v/release//VonThaler/NotEnoughUpdates-1.21.11?color=informational&include_prereleases&label=release&logo=github&logoColor=white" alt="release">
     </a>
     <!-- lines -->
-    <a href="https://github.com/NotEnoughUpdates/NotEnoughUpdates/graphs/code-frequency" target="_blank">
-        <img src="https://tokei.rs/b1/github/NotEnoughUpdates/NotEnoughUpdates" alt="lines">
+    <a href="https://github.com/VonThaler/NotEnoughUpdates-1.21.11/graphs/code-frequency" target="_blank">
+        <img src="https://tokei.rs/b1/github/VonThaler/NotEnoughUpdates-1.21.11" alt="lines">
     </a>
     <!-- license -->
     <a href="./COPYING.LESSER" target="_blank">
-        <img src="https://img.shields.io/github/license/NotEnoughUpdates/NotEnoughUpdates?color=informational" alt="license">
+        <img src="https://img.shields.io/github/license/VonThaler/NotEnoughUpdates-1.21.11?color=informational" alt="license">
     </a>
     <!-- contributors -->
-    <a href="https://github.com/NotEnoughUpdates/NotEnoughUpdates/graphs/contributors" target="_blank">
-        <img src="https://img.shields.io/github/contributors/NotEnoughUpdates/NotEnoughUpdates?color=informational&logo=GitHub" alt="contributors">
+    <a href="https://github.com/VonThaler/NotEnoughUpdates-1.21.11/graphs/contributors" target="_blank">
+        <img src="https://img.shields.io/github/contributors/VonThaler/NotEnoughUpdates-1.21.11?color=informational&logo=GitHub" alt="contributors">
     </a>
     <!-- discord -->
     <a href="https://discord.gg/moulberry" target="_blank">
         <img src="https://img.shields.io/discord/516977525906341928?label=discord&color=informational&logo=Discord&logoColor=FFFFFF" alt="discord">
     </a>
     <!-- downloads -->
-    <a href="https://github.com/NotEnoughUpdates/NotEnoughUpdates/releases" target="_blank">
-        <img src="https://img.shields.io/github/downloads/NotEnoughUpdates/NotEnoughUpdates/total?label=downloads&color=informational&logo=GitHub" alt="downloads">
+    <a href="https://github.com/VonThaler/NotEnoughUpdates-1.21.11/releases" target="_blank">
+        <img src="https://img.shields.io/github/downloads/VonThaler/NotEnoughUpdates-1.21.11/total?label=downloads&color=informational&logo=GitHub" alt="downloads">
     </a>
 </div>
 
-NotEnoughUpdates (NEU) is a feature rich 1.8.9 Minecraft forge mod for Hypixel Skyblock.
+NotEnoughUpdates (NEU) is a feature rich 1.8.9 Minecraft forge mod for Hypixel Skyblock, ported by [VonThaler](https://github.com/VonThaler/) to Fabric 1.21.11.
 
 ## Getting Started
 
@@ -43,7 +43,7 @@ NotEnoughUpdates (NEU) is a feature rich 1.8.9 Minecraft forge mod for Hypixel S
 
 #### Installing the NotEnoughUpdates mod
 
-1. Download the latest mod [release](https://github.com/NotEnoughUpdates/NotEnoughUpdates/releases). If it says `this file may harm your computer`, click `allow anyways` as all java files will be flagged by Chrome.
+1. Download the latest mod [release](https://github.com/VonThaler/NotEnoughUpdates-1.21.11/releases/). If it says `this file may harm your computer`, click `allow anyways` as all java files will be flagged by Chrome.
 2. Add the NEU mod:
    - If you have java installed, double click the file, click `install`
    - If not, press the windows key + R; type `%appdata%`; click on the folder called `.minecraft`; click on the folder called `mods` and drag the mods file in here.
