@@ -120,11 +120,14 @@ dependencies {
 	}
 
 	// --- libautoupdate
+	implementation("moe.nea:libautoupdate:1.3.1")
 	modImplementation("moe.nea:libautoupdate:1.3.1")
 	shadowBundle("moe.nea:libautoupdate:1.3.1")
 	include("moe.nea:libautoupdate:1.3.1")
 
 	// --- NEA Lisp
+	implementation(libs.nealisp)
+	modImplementation(libs.nealisp)
 	shadowBundle(libs.nealisp) {
 		exclude("org.jetbrains.kotlin")
 	}
