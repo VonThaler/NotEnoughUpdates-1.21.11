@@ -106,14 +106,11 @@ dependencies {
 	annotationProcessor("org.projectlombok:lombok:1.18.32")
 
 	// --- Annotations
-	compileOnly("org.jetbrains:annotations:24.0.1")
+	//compileOnly("org.jetbrains:annotations:24.0.1")
 	compileOnly(project(":annotations"))
 	ksp(project(":annotations"))
 
 	// --- MoulConfig (
-	// IMPORTANT: You must upgrade to a MoulConfig version that supports Fabric 1.21.
-	// Check https://maven.notenoughupdates.org for the latest fabric build.
-	// Replace "MOULCONFIG_FABRIC_VERSION" below with the real version once confirmed.
 	modImplementation("org.notenoughupdates.moulconfig:modern-1.21.11:4.4.0-beta")
 	include("org.notenoughupdates.moulconfig:modern-1.21.11:4.4.0-beta") {
 		exclude("net.fabricmc.fabric-api")
