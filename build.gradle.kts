@@ -82,35 +82,35 @@ val devEnv: Configuration by configurations.creating {
 
 // ── Dependencies ──────────────────────────────────────────────────────────────
 dependencies {
-	// --- Core Fabric / Minecraft ---
+	// --- Core Fabric
 	minecraft("com.mojang:minecraft:${project.property("minecraft_version")}")
-	// Using Mojang mappings (mojmap) – widely supported, no license issues at runtime
+	// Using Mojang mappings
 	mappings("net.fabricmc:yarn:${project.property("yarn_mappings")}:v2")
 	modImplementation("net.fabricmc:fabric-loader:${project.property("loader_version")}")
 	modImplementation("net.fabricmc.fabric-api:fabric-api:${project.property("fabric_api_version")}")
 
-	// --- Kotlin on Fabric (replaces manual kotlin bundling from 1.8.9 build) ---
-	// This mod provides the Kotlin runtime to all Fabric mods; no need to shadow kotlin stdlib
+	// --- Kotlin
+
 	modImplementation("net.fabricmc:fabric-language-kotlin:${project.property("fabric_kotlin_version")}")
 
-	// --- Mixin (provided by Fabric Loader, just need annotation processor) ---
+	// --- Mixin
 	annotationProcessor("net.fabricmc:sponge-mixin:0.15.3+mixin.0.8.7")
 	compileOnly("org.spongepowered:mixin:0.8.7")
 
-	// --- KSP / AutoService (unchanged from 1.8.9 build) ---
+	// --- KSP
 	ksp("dev.zacsweers.autoservice:auto-service-ksp:1.0.0")
 	implementation("com.google.auto.service:auto-service-annotations:1.0.1")
 
-	// --- Lombok (unchanged) ---
+	// --- Lombok
 	compileOnly("org.projectlombok:lombok:1.18.32")
 	annotationProcessor("org.projectlombok:lombok:1.18.32")
 
-	// --- Annotations (unchanged) ---
+	// --- Annotations
 	compileOnly("org.jetbrains:annotations:24.0.1")
 	compileOnly(project(":annotations"))
 	ksp(project(":annotations"))
 
-	// --- MoulConfig (Fabric build) ---
+	// --- MoulConfig (
 	// IMPORTANT: You must upgrade to a MoulConfig version that supports Fabric 1.21.
 	// Check https://maven.notenoughupdates.org for the latest fabric build.
 	// Replace "MOULCONFIG_FABRIC_VERSION" below with the real version once confirmed.
@@ -119,34 +119,34 @@ dependencies {
 		exclude("net.fabricmc.fabric-api")
 	}
 
-	// --- libautoupdate (unchanged dependency, works on Fabric) ---
+	// --- libautoupdate
+	modImplementation("moe.nea:libautoupdate:1.3.1")
 	shadowBundle("moe.nea:libautoupdate:1.3.1")
 	include("moe.nea:libautoupdate:1.3.1")
 
-	// --- NEA Lisp (unchanged) ---
+	// --- NEA Lisp
 	shadowBundle(libs.nealisp) {
 		exclude("org.jetbrains.kotlin")
 	}
 	include(libs.nealisp)
 
 	// --- Brigadier is now bundled by vanilla Minecraft in 1.21 – no longer needs shadowing ---
-	// (was: shadowImplementation("com.mojang:brigadier:1.0.18"))
-	// It's available on the compile classpath automatically via the minecraft dependency.
 
-	// --- Bliki (wiki parsing – unchanged) ---
+
+	// --- Bliki
 	shadowBundle("info.bliki.wiki:bliki-core:3.1.0")
 	include("info.bliki.wiki:bliki-core:3.1.0")
 
-	// --- Cloth Config (replaces Forge's config GUI system) ---
+	// --- Cloth Config
 	modImplementation("me.shedaniel.cloth:cloth-config-fabric:15.0.130") {
 		exclude(group = "net.fabricmc.fabric-api")
 	}
 	include("me.shedaniel.cloth:cloth-config-fabric:15.0.130")
 
-	// --- ModMenu (optional but recommended – adds NEU to the mods list in-game) ---
+	// --- ModMenu
 	modCompileOnly("com.terraformersmc:modmenu:11.0.3")
 
-	// --- Dev Auth (replaces DevAuth-forge-legacy) ---
+	// --- Dev Auth
 	devEnv("me.djtheredstoner:DevAuth-fabric:1.2.1")
 
 	// --- Test ---

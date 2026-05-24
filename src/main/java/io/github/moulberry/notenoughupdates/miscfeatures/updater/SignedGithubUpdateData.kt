@@ -39,7 +39,7 @@ class SignedGithubUpdateData(
     download
 ) {
     override fun toString(): String {
-        return "${super.toString()} + Signatures(signatures = ${signatures.map { it.name }}})"
+        return "${super.toString()} + Signatures(signatures = ${signatures.map { it.getName() }}})"
     }
 
     fun verifyAnySignature(): Boolean {
@@ -62,8 +62,8 @@ class SignedGithubUpdateData(
 
     private fun verifySignature(signatureDownload: GithubRelease.Download): Boolean {
         val name = signatureDownload.name.substringBeforeLast('.').substringAfterLast("_")
-        val signatureBytes = UpdateUtils.openUrlConnection(URL(signatureDownload.browserDownloadUrl)).readBytes()
-        val hashBytes = ByteArrayInputStream(sha256.uppercase().encodeToByteArray())
+        val signatureBytes = UpdateUtils.openUrlConnection(URL(signatureDownload.getBrowserDownloadUrl())).readBytes()
+        val hashBytes = ByteArrayInputStream(getSha256().uppercase().encodeToByteArray())
         return SigningPool.verifySignature(name, hashBytes, signatureBytes)
     }
 
