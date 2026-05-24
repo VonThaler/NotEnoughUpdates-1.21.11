@@ -19,10 +19,9 @@
 
 package io.github.moulberry.notenoughupdates.core;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ScaledResolution;
 import org.lwjgl.opengl.GL11;
 
+import java.lang.reflect.Method;
 import java.util.LinkedList;
 
 public class GlScissorStack {
@@ -55,16 +54,14 @@ public class GlScissorStack {
 			return new Bounds(left, top, right, bottom);
 		}
 
-		public void set(ScaledResolution scaledResolution) {
-			int height = Minecraft.getMinecraft().displayHeight;
-			int scale = scaledResolution.getScaleFactor();
+		public void set(int scale, int height) {
 			GL11.glScissor(left * scale, height - bottom * scale, (right - left) * scale, (bottom - top) * scale);
 		}
 	}
 
 	private static final LinkedList<Bounds> boundsStack = new LinkedList<>();
 
-	public static void push(int left, int top, int right, int bottom, ScaledResolution scaledResolution) {
+	public static void push(int left, int top, int right, int bottom, int scaleFactor, int framebufferHeight) {
 		if (right < left) {
 			int temp = right;
 			right = left;
@@ -80,34 +77,70 @@ public class GlScissorStack {
 		} else {
 			boundsStack.push(boundsStack.peek().createSubBound(left, top, right, bottom));
 		}
-		refresh(scaledResolution);
+		refresh(scaleFactor, framebufferHeight);
+	}
+
+	public static void push(int left, int top, int right, int bottom, Object scaledResolution) {
+		push(left, top, right, bottom, getScaleFactor(scaledResolution), getFramebufferHeight(scaledResolution));
 	}
 
 	/**
-	 * Disable scissors temporarily. Can be reenabled with {@link #refresh(ScaledResolution)}
+	 * Disable scissors temporarily. Can be reenabled with {@link #refresh(int, int)}
 	 */
 	public static void disableTemporary() {
 		GL11.glDisable(GL11.GL_SCISSOR_TEST);
 	}
 
-	public static void refresh(ScaledResolution scaledResolution) {
+	public static void refresh(int scaleFactor, int framebufferHeight) {
 		if (boundsStack.isEmpty()) {
 			GL11.glDisable(GL11.GL_SCISSOR_TEST);
 		} else {
-			boundsStack.peek().set(scaledResolution);
+			boundsStack.peek().set(scaleFactor, framebufferHeight);
 			GL11.glEnable(GL11.GL_SCISSOR_TEST);
 		}
 	}
 
-	public static void pop(ScaledResolution scaledResolution) {
+	public static void refresh(Object scaledResolution) {
+		refresh(getScaleFactor(scaledResolution), getFramebufferHeight(scaledResolution));
+	}
+
+	public static void pop(int scaleFactor, int framebufferHeight) {
 		if (!boundsStack.isEmpty()) {
 			boundsStack.pop();
 		}
-		refresh(scaledResolution);
+		refresh(scaleFactor, framebufferHeight);
+	}
+
+	public static void pop(Object scaledResolution) {
+		pop(getScaleFactor(scaledResolution), getFramebufferHeight(scaledResolution));
 	}
 
 	public static void clear() {
 		boundsStack.clear();
 		GL11.glDisable(GL11.GL_SCISSOR_TEST);
+	}
+
+	private static int getScaleFactor(Object scaledResolution) {
+		if (scaledResolution == null) {
+			return 1;
+		}
+		try {
+			Method method = scaledResolution.getClass().getMethod("getScaleFactor");
+			return ((Number) method.invoke(scaledResolution)).intValue();
+		} catch (ReflectiveOperationException e) {
+			return 1;
+		}
+	}
+
+	private static int getFramebufferHeight(Object scaledResolution) {
+		if (scaledResolution == null) {
+			return 0;
+		}
+		try {
+			Method method = scaledResolution.getClass().getMethod("getFramebufferHeight");
+			return ((Number) method.invoke(scaledResolution)).intValue();
+		} catch (ReflectiveOperationException e) {
+			return 0;
+		}
 	}
 }

@@ -24,6 +24,7 @@ import com.google.gson.JsonElement
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.core.GlScissorStack
+import io.github.moulberry.notenoughupdates.events.NEUEventBus
 import io.github.moulberry.notenoughupdates.core.util.StringUtils
 import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer
@@ -36,15 +37,13 @@ import moe.nea.lisp.LispExecutionContext
 import moe.nea.lisp.LispParser
 import moe.nea.lisp.StackFrame
 import moe.nea.lisp.bind.AutoBinder
-import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.ScaledResolution
-import net.minecraft.init.Items
+import net.minecraft.client.MinecraftClient
+import net.minecraft.item.Items
 import net.minecraft.item.ItemStack
-import net.minecraft.util.ResourceLocation
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraft.util.Identifier
 import kotlin.math.floor
 
-class HotmTreeRenderer(val hotmLayout: HotmTreeLayout, val prelude: List<String>) {
+class HotmTreeRenderer(private val hotmLayout: HotmTreeLayout, prelude: List<String>) {
     val lec = LispExecutionContext()
 
     init {
@@ -66,7 +65,13 @@ class HotmTreeRenderer(val hotmLayout: HotmTreeLayout, val prelude: List<String>
 
         var renderer: HotmTreeRenderer? = null
 
-        @SubscribeEvent
+        init {
+            NEUEventBus.INSTANCE.subscribe(RepositoryReloadEvent::class.java) { event ->
+                onRepoReload(event)
+            }
+        }
+
+        @Suppress("UNUSED_PARAMETER")
         fun onRepoReload(event: RepositoryReloadEvent) {
             renderer = runCatching {
                 val hotmLayoutFile = NotEnoughUpdates.INSTANCE.manager.repoLocation
@@ -78,9 +83,9 @@ class HotmTreeRenderer(val hotmLayout: HotmTreeLayout, val prelude: List<String>
             }.getOrNull()
         }
 
-        val perkBackground = ResourceLocation("notenoughupdates:profile_viewer/mining/perk_background.png")
-        val perkConnectionX = ResourceLocation("notenoughupdates:profile_viewer/mining/perk_connection_x.png")
-        val perkConnectionY = ResourceLocation("notenoughupdates:profile_viewer/mining/perk_connection_y.png")
+        val perkBackground = Identifier.of("notenoughupdates:profile_viewer/mining/perk_background.png")
+        val perkConnectionX = Identifier.of("notenoughupdates:profile_viewer/mining/perk_connection_x.png")
+        val perkConnectionY = Identifier.of("notenoughupdates:profile_viewer/mining/perk_connection_y.png")
     }
 
     val gridNodes = hotmLayout.perks.map { (it.value.x to it.value.y) to it }.toMap()
@@ -97,7 +102,8 @@ class HotmTreeRenderer(val hotmLayout: HotmTreeLayout, val prelude: List<String>
         gridSize: Int,
         gridSpacing: Int,
     ) {
-        val sr = ScaledResolution(Minecraft.getMinecraft())
+        val client = MinecraftClient.getInstance()
+        val window = client.window
         val relX = mouseX - x
         val relY = mouseY - y
         val gridOffset = (gridSize - 16) / 2
@@ -105,8 +111,8 @@ class HotmTreeRenderer(val hotmLayout: HotmTreeLayout, val prelude: List<String>
             val level = levels[key]?.asInt ?: 0
             val (values, bindings) = calculatePerkProperties(perk, level, levels, hotmLevelingInfo)
             val tooltip = createPerkTooltip(perk, level, values, bindings)
-            val perkItem = getPerkItem(perk, level, values, bindings, tooltip) ?: ItemStack(Items.painting, 1, 10)
-            Minecraft.getMinecraft().textureManager.bindTexture(perkBackground)
+            val perkItem = getPerkItem(perk, level, values, bindings, tooltip) ?: ItemStack(Items.PAINTING)
+            bindTexture(client, perkBackground)
             Utils.drawTexturedRect(
                 (perk.x * gridSize + x + gridSpacing / 2).toFloat(),
                 (perk.y * gridSize + y + gridSpacing / 2).toFloat(),
@@ -114,7 +120,7 @@ class HotmTreeRenderer(val hotmLayout: HotmTreeLayout, val prelude: List<String>
                 0F, 1f, 0f, 1f
             )
             if (Pair(perk.x - 1, perk.y) in gridNodes) {
-                Minecraft.getMinecraft().textureManager.bindTexture(perkConnectionX)
+                bindTexture(client, perkConnectionX)
                 Utils.drawTexturedRect(
                     (perk.x * gridSize + x - gridSpacing / 2).toFloat(),
                     (perk.y * gridSize + y).toFloat(),
@@ -123,7 +129,7 @@ class HotmTreeRenderer(val hotmLayout: HotmTreeLayout, val prelude: List<String>
                 )
             }
             if (Pair(perk.x, perk.y - 1) in gridNodes) {
-                Minecraft.getMinecraft().textureManager.bindTexture(perkConnectionY)
+                bindTexture(client, perkConnectionY)
                 Utils.drawTexturedRect(
                     (perk.x * gridSize + x).toFloat(),
                     (perk.y * gridSize + y - gridSpacing / 2).toFloat(),
@@ -138,14 +144,15 @@ class HotmTreeRenderer(val hotmLayout: HotmTreeLayout, val prelude: List<String>
                 Utils.drawHoveringText(
                     tooltip,
                     mouseX, mouseY,
-                    sr.scaledWidth, sr.scaledHeight, -1
+                    window.scaledWidth, window.scaledHeight, -1
                 )
-                GlScissorStack.refresh(sr)
+                GlScissorStack.refresh(window.scaleFactor, window.framebufferHeight)
             }
             Utils.drawItemStack(perkItem, perk.x * gridSize + x + gridOffset, perk.y * gridSize + y + gridOffset)
         }
     }
 
+    @Suppress("UNUSED_PARAMETER")
     fun getPerkItem(
         perk: LayoutedHotmPerk,
         level: Int,
@@ -223,7 +230,7 @@ class HotmTreeRenderer(val hotmLayout: HotmTreeLayout, val prelude: List<String>
             else
                 true
         }.map { it.text } + end).map {
-            it.replace("\\{([a-z\\-A-Z_0-9]+)\\}".toRegex()) {
+            it.replace(Regex("""\{([a-z\-A-Z_0-9]+)}""")) {
                 (when (val value = values[it.groupValues[1]]) {
                     is LispData.LispString -> value.string
                     is LispData.LispNumber -> StringUtils.formatNumber(if (it.groupValues[1] == "cost") floor(value.value).toInt() else value.value)
@@ -233,3 +240,23 @@ class HotmTreeRenderer(val hotmLayout: HotmTreeLayout, val prelude: List<String>
         }
     }
 }
+
+private fun bindTexture(client: MinecraftClient, texture: Identifier) {
+    val textureManager = client.textureManager
+    val managerMethod = textureManager.javaClass.methods.firstOrNull {
+        it.name == "bindTexture" && it.parameterTypes.size == 1 && it.parameterTypes[0].isAssignableFrom(texture.javaClass)
+    }
+    if (managerMethod != null) {
+        managerMethod.invoke(textureManager, texture)
+        return
+    }
+
+    val renderSystem = Class.forName("com.mojang.blaze3d.systems.RenderSystem")
+    val shaderMethod = renderSystem.methods.firstOrNull {
+        it.name == "setShaderTexture" && it.parameterTypes.size == 2 && it.parameterTypes[0] == Int::class.javaPrimitiveType
+    }
+    if (shaderMethod != null) {
+        shaderMethod.invoke(null, 0, texture)
+    }
+}
+
